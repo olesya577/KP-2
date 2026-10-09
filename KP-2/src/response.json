@@ -1,0 +1,32 @@
+[
+  {
+    "callsign": "CFTAB",
+    "origin_country": "Canada",
+    "velocity": 132.27,
+    "baro_altitude": 1310.64
+  },
+  {
+    "callsign": "WJA793",
+    "origin_country": "Canada",
+    "velocity": 111.3,
+    "baro_altitude": 1226.82
+  },
+  {
+    "callsign": "CJT566",
+    "origin_country": "Canada",
+    "velocity": 86.43,
+    "baro_altitude": 1165.86
+  },
+  {
+    "callsign": "ACA840",
+    "origin_country": "Canada",
+    "velocity": 85.12,
+    "baro_altitude": 1463.04
+  },
+  {
+    "callsign": "ANT773",
+    "origin_country": "Canada",
+    "velocity": 67.91,
+    "baro_altitude": 1196.34
+  }
+]
