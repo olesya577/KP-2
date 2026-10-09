@@ -11,13 +11,11 @@ class Aeroplane(APIAdapter):
     """Класс для представления самолёта"""
 
     def __init__(
-            self,
-            callsign: str,
-            origin_country: str,
-            velocity: float,
-            baro_altitude: float,
-
-
+        self,
+        callsign: str,
+        origin_country: str,
+        velocity: float,
+        baro_altitude: float,
     ):
         if not callsign:
             raise ValueError("Позывной не может быть пустым")
@@ -32,7 +30,6 @@ class Aeroplane(APIAdapter):
         self.origin_country = origin_country
         self.velocity = velocity or 0.0
         self.baro_altitude = baro_altitude or 0.0
-
 
     def __repr__(self) -> str:
         return (
@@ -62,9 +59,8 @@ class Aeroplane(APIAdapter):
             return NotImplemented
         return self.velocity < other.velocity
 
-
     @classmethod
-    def cast_to_object_list(cls, data: List[Dict[str, Any]]) -> List['Aeroplane']:
+    def cast_to_object_list(cls, data: List[Dict[str, Any]]) -> List["Aeroplane"]:
         """Преобразует список словарей OpenSky в список объектов"""
         result = []
 
@@ -73,20 +69,18 @@ class Aeroplane(APIAdapter):
                 if isinstance(item, list):
                     # Формат OpenSky state vector
                     plane = cls(
-                        callsign=item[1].strip() if item[1] else 'UNKNOWN',
-                        origin_country=item[2] or 'Unknown',
+                        callsign=item[1].strip() if item[1] else "UNKNOWN",
+                        origin_country=item[2] or "Unknown",
                         velocity=item[9] or 0.0,
                         baro_altitude=item[7] or 0.0,
-
                     )
                 else:
                     # Формат словаря
                     plane = cls(
-                        callsign=item.get('callsign') or 'UNKNOWN',
-                        origin_country=item.get('origin_country') or 'Unknown',
-                        velocity=item.get('velocity') or 0.0,
-                        baro_altitude=item.get('baro_altitude') or 0.0,
-
+                        callsign=item.get("callsign") or "UNKNOWN",
+                        origin_country=item.get("origin_country") or "Unknown",
+                        velocity=item.get("velocity") or 0.0,
+                        baro_altitude=item.get("baro_altitude") or 0.0,
                     )
                 result.append(plane)
             except (ValueError, IndexError, TypeError):
@@ -96,15 +90,16 @@ class Aeroplane(APIAdapter):
 
     def to_dict(self) -> Dict[str, Any]:
         return {
-            'callsign': self.callsign,
-            'origin_country': self.origin_country,
-            'velocity': self.velocity,
-            'baro_altitude': self.baro_altitude,
-
+            "callsign": self.callsign,
+            "origin_country": self.origin_country,
+            "velocity": self.velocity,
+            "baro_altitude": self.baro_altitude,
         }
 
 
-def filter_aeroplanes(aeroplanes: List[Aeroplane], filter_words: List[str]) -> List[Aeroplane]:
+def filter_aeroplanes(
+    aeroplanes: List[Aeroplane], filter_words: List[str]
+) -> List[Aeroplane]:
     """
     Фильтрует самолёты по стране регистрации.
     """
@@ -121,7 +116,9 @@ def filter_aeroplanes(aeroplanes: List[Aeroplane], filter_words: List[str]) -> L
     return result
 
 
-def get_aeroplanes_by_altitude(aeroplanes: List[Aeroplane], altitude_range: str) -> List[Aeroplane]:
+def get_aeroplanes_by_altitude(
+    aeroplanes: List[Aeroplane], altitude_range: str
+) -> List[Aeroplane]:
     """
     Фильтрует самолёты по диапазону высот.
 
@@ -136,7 +133,7 @@ def get_aeroplanes_by_altitude(aeroplanes: List[Aeroplane], altitude_range: str)
         return aeroplanes
 
     try:
-        parts = altitude_range.replace('-', ' ').split()
+        parts = altitude_range.replace("-", " ").split()
         if len(parts) < 2:
             return aeroplanes
 
@@ -149,7 +146,9 @@ def get_aeroplanes_by_altitude(aeroplanes: List[Aeroplane], altitude_range: str)
         return aeroplanes
 
 
-def sort_aeroplanes(aeroplanes: List[Aeroplane], reverse: bool = True) -> List[Aeroplane]:
+def sort_aeroplanes(
+    aeroplanes: List[Aeroplane], reverse: bool = True
+) -> List[Aeroplane]:
     """
     Сортирует самолёты по скорости.
 
@@ -183,71 +182,74 @@ def print_aeroplanes(aeroplanes: List[Aeroplane]) -> None:
 
 
 class BaseSaver(ABC):
-        """Абстрактный класс для хранилища"""
+    """Абстрактный класс для хранилища"""
 
-        @abstractmethod
-        def add_aeroplane(self, aeroplane: Aeroplane) -> None:
-            pass
+    @abstractmethod
+    def add_aeroplane(self, aeroplane: Aeroplane) -> None:
+        pass
 
-        @abstractmethod
-        def get_aeroplanes(self, **criteria) -> List[Aeroplane]:
-            pass
+    @abstractmethod
+    def get_aeroplanes(self, **criteria) -> List[Aeroplane]:
+        pass
 
-        @abstractmethod
-        def delete_aeroplane(self, aeroplane: Aeroplane) -> None:
-            pass
+    @abstractmethod
+    def delete_aeroplane(self, aeroplane: Aeroplane) -> None:
+        pass
+
 
 class JSONSaver(BaseSaver):
-        """Класс для сохранения самолётов в JSON"""
+    """Класс для сохранения самолётов в JSON"""
 
-        def __init__(self, filename: str = 'response.json'):
-            self.filename = filename
-            self._ensure_file_exists()
+    def __init__(self, filename: str = "response.json"):
+        self.filename = filename
+        self._ensure_file_exists()
 
-        def _ensure_file_exists(self):
-            if not os.path.exists(self.filename):
-                with open(self.filename, 'w', encoding='utf-8') as f:
-                    json.dump([], f)
+    def _ensure_file_exists(self):
+        if not os.path.exists(self.filename):
+            with open(self.filename, "w", encoding="utf-8") as f:
+                json.dump([], f)
 
-        def _read_data(self) -> List[Dict]:
-            try:
-                with open(self.filename, 'r', encoding='utf-8') as f:
-                    return json.load(f)
-            except (json.JSONDecodeError, FileNotFoundError):
-                return []
+    def _read_data(self) -> List[Dict]:
+        try:
+            with open(self.filename, "r", encoding="utf-8") as f:
+                return json.load(f)
+        except (json.JSONDecodeError, FileNotFoundError):
+            return []
 
-        def _write_data(self, data: List[Dict]) -> None:
-            with open(self.filename, 'w', encoding='utf-8') as f:
-                json.dump(data, f, ensure_ascii=False, indent=2)
+    def _write_data(self, data: List[Dict]) -> None:
+        with open(self.filename, "w", encoding="utf-8") as f:
+            json.dump(data, f, ensure_ascii=False, indent=2)
 
-        def add_aeroplane(self, aeroplane: Aeroplane) -> None:
-            if not isinstance(aeroplane, Aeroplane):
-                raise TypeError("Можно добавлять только объекты Aeroplane")
+    def add_aeroplane(self, aeroplane: Aeroplane) -> None:
+        if not isinstance(aeroplane, Aeroplane):
+            raise TypeError("Можно добавлять только объекты Aeroplane")
 
-            data = self._read_data()
-            data.append(aeroplane.to_dict())
-            self._write_data(data)
+        data = self._read_data()
+        data.append(aeroplane.to_dict())
+        self._write_data(data)
 
-        def get_aeroplanes(self, **criteria) -> List[Aeroplane]:
-            data = self._read_data()
-            result = []
+    def get_aeroplanes(self, **criteria) -> List[Aeroplane]:
+        data = self._read_data()
+        result = []
 
-            for item in data:
-                if all(item.get(k) == v for k, v in criteria.items()):
-                    try:
-                        result.append(Aeroplane(
-                            callsign=item['callsign'],
-                            origin_country=item['origin_country'],
-                            velocity=item['velocity'],
-                            baro_altitude=item['baro_altitude']
-                        ))
-                    except (ValueError, KeyError):
-                        continue
+        for item in data:
+            if all(item.get(k) == v for k, v in criteria.items()):
+                try:
+                    result.append(
+                        Aeroplane(
+                            callsign=item["callsign"],
+                            origin_country=item["origin_country"],
+                            velocity=item["velocity"],
+                            baro_altitude=item["baro_altitude"],
+                        )
+                    )
+                except (ValueError, KeyError):
+                    continue
 
-            return result
+        return result
 
-        def delete_aeroplane(self, aeroplane: Aeroplane) -> None:
-            data = self._read_data()
-            target = aeroplane.to_dict()
-            new_data = [item for item in data if item != target]
-            self._write_data(new_data)
+    def delete_aeroplane(self, aeroplane: Aeroplane) -> None:
+        data = self._read_data()
+        target = aeroplane.to_dict()
+        new_data = [item for item in data if item != target]
+        self._write_data(new_data)

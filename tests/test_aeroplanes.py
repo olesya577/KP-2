@@ -16,6 +16,7 @@ from src.aeroplanes import (
 from src.api_key import BaseAPIClient,APIAdapter
 
 
+
 class TestBaseAPIClient:
     """Тесты абстрактного класса BaseAPIClient"""
 

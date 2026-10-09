@@ -128,3 +128,5 @@ class APIAdapter(BaseAPIClient):
         logger.info(f"Найдено {len(result)} самолётов над {country}")
         return result
 
+
+

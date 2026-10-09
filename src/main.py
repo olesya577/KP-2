@@ -9,6 +9,7 @@ from src.aeroplanes import (
 from src.api_key import APIAdapter
 
 
+
 def user_interaction():
     """Функция для взаимодействия с пользователем"""
 

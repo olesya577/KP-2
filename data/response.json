@@ -15,6 +15,7 @@
         "display_name": "Calgary International Airport, 2000, Airport Road NE, Calgary International Airport, Калгари, Альберта, T2E 6W5, Канада",
         "boundingbox": ["51.0930394", "51.1540197", "-114.0424778", "-113.9865157"]
     },
+
     {
         "place_id": 376244550,
         "licence": "Data © OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright",
